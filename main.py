@@ -2,14 +2,13 @@ import nextcord
 from nextcord.ext import commands
 import os
 from keep_alive import keep_alive
-from nextcord import TextChannel
+from nextcord import SlashOption, TextChannel
+from typing import Optional
 keep_alive()
-
 bot = commands.Bot(command_prefix=".", intents=nextcord.Intents.all())
 bot.remove_command("help")
 
 token = os.environ['TOKEN']
-
 cogs = ["cogs.basic","cogs.Snipe","cogs.help","cogs.moderation","cogs.WelcomeCog"]  # Modify the cogs list to include the correct path to the basic.commands file
 
 @bot.event
@@ -75,6 +74,7 @@ class butts(nextcord.ui.View):
 
 @bot.slash_command(name="ticket", description="Setup the ticket system!")
 async def ticket(ctx: nextcord.Interaction):
+    webhook_url=webhook.url
     if ctx.user.guild_permissions.administrator and ctx.user != None:
 
 
@@ -83,31 +83,29 @@ async def ticket(ctx: nextcord.Interaction):
     else:
         embed = nextcord.Embed(title=f"You don't have the permissions for this!")
         await ctx.send(embed=embed, ephemeral=True)
-
-
 @bot.slash_command(name ="webhook", description="Create a webhook")
 async def webhook(ctx: nextcord.Interaction, channel: TextChannel, name=str):
      if name is None:
          webhook = await channel.create_webhook(name="Webhook")
-         embed = nextcord.Embed(title="Webhook created", description="A webhook has been created", color=nextcord.Colour.random())
+         embed = nextcord.Embed(title="Webhook created", description=f"A webhook has been created", color=nextcord.Colour.random())
 
     # Send a message using the webhook with the embed
          await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
 
-         await ctx.send(f"Webhook created in {channel.mention}.")
+         await ctx.send(f"Webhook created in {channel.mention} webhook url={webhook.url}")
 
     # Send a message using the webhook with the embed
          await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
 
-         await ctx.send(f"Webhook created in {channel.mention}.")
+         await ctx.send(f"Webhook created in {channel.mention} webhook url={webhook.url}")
      elif channel is None:
          webhook = await channel.create_webhook(name="Webhook")
-         embed = nextcord.Embed(title="Webhook created", description="A webhook has been created", color=nextcord.Colour.random())
+         embed = nextcord.Embed(title="Webhook created", description=f"A webhook has been created", color=nextcord.Colour.random())
 
     # Send a message using the webhook with the embed
          await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
 
-         await ctx.send(f"Webhook created in {channel.mention}.")
+         await ctx.send(f"Webhook created in {channel.mention}., url={webhook.url}")
 
     # Send a message using the webhook with the embed
          await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
@@ -120,8 +118,56 @@ async def webhook(ctx: nextcord.Interaction, channel: TextChannel, name=str):
     # Send a message using the webhook with the embed
          await webhook.send(embed=embed, username=ctx.user.display_name, avatar_url=ctx.user.avatar.url)
 
-         await ctx.send(f"Webhook created in {channel.mention}.")
+         await ctx.send(f"Webhook created in {channel.mention}. url={webhook.url}")
 
+@bot.slash_command(name="embed", description="Create An embed")
+async def embed(ctx: nextcord.Interaction, title:str=SlashOption(required=True), description:str=SlashOption(required=True), color:str=SlashOption(required=True)):
+    if ctx.user.guild_permissions.administrator and ctx.user != None:
+        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        await ctx.send(embed=embed)
+    else:
+        embed = nextcord.Embed(title=f"You don't have the permissions for this!")
+        await ctx.send(embed=embed, ephemeral=True)
+
+@bot.slash_command(name="sendwebhook", description="Send an embed message using webhook")
+async def sendwebhook(ctx: nextcord.Interaction, title:str=SlashOption(required=True), description:str=SlashOption(required=True), color:str=SlashOption(required=True), username:str=SlashOption(required=True), avatarurl:str=SlashOption(required=True),
+icon:str=SlashOption(required=False),thumbnail_icon:str=SlashOption(required=False), image:str=SlashOption(required=False), footer_text:str=SlashOption(required=False)):
+    if ctx.user.guild_permissions.administrator and ctx.user != None:
+        webhook=await bot.fetch_webhook(1198637352449491095)
+        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        embed.set_thumbnail(url=thumbnail_icon)
+        embed.set_image(url=image)
+        embed.set_footer(text=footer_text, icon_url=icon)
+        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
+        await ctx.send("Embed created with webhook.")
+    elif icon is None:
+        webhook=await bot.fetch_webhook(1198637352449491095)
+        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        embed.set_thumbnail(url=thumbnail_icon)
+        embed.set_image(url=image)
+        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
+        await ctx.send("Embed created with webhook.")
+    elif thumbnail_icon is None:
+        webhook=await bot.fetch_webhook(1198637352449491095)
+        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        embed.set_image(url=image)
+        embed.set_footer(text=text, icon_url=icon)
+        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
+        await ctx.send("Embed created with webhook.")
+    elif image is None:
+        webhook=await bot.fetch_webhook(1198637352449491095)
+        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        embed.set_thumbnail(url=thumbnail_icon)
+        embed.set_footer(text=text, icon_url=icon) 
+        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
+        await ctx.send("Embed created with webhook.")
+    else:
+        webhook=await bot.fetch_webhook(1198637352449491095)
+        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        embed.set_thumbnail(url=thumbnail_icon)
+        embed.set_image(url=image)
+        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
+        await ctx.send("Embed created with webhook")
 
 
 
