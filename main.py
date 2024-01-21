@@ -132,7 +132,7 @@ async def embed(ctx: nextcord.Interaction,title:str=SlashOption(required=True), 
         await ctx.send(embed=embed, ephemeral=True)
 
 @bot.slash_command(name="sendwebhook", description="Send an embed message using webhook")
-async def sendwebhook(ctx: nextcord.Interaction,id:str=SlashOption(required=True)title:str=SlashOption(required=True), description:str=SlashOption(required=True), color:str=SlashOption(required=True), username:str=SlashOption(required=True), avatarurl:str=SlashOption(required=True),
+async def sendwebhook(ctx: nextcord.Interaction,id:str=SlashOption(required=True), title:str=SlashOption(required=True), description:str=SlashOption(required=True), color:str=SlashOption(required=True), username:str=SlashOption(required=True), avatarurl:str=SlashOption(required=True),
 icon:str=SlashOption(required=False),thumbnail_icon:str=SlashOption(required=False), image:str=SlashOption(required=False), footer_text:str=SlashOption(required=False)):
     if ctx.user.guild_permissions.administrator and ctx.user != None:
         webhook=await bot.fetch_webhook(id)
