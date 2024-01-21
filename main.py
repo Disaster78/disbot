@@ -2,6 +2,7 @@ import nextcord
 from nextcord.ext import commands
 import os
 from keep_alive import keep_alive
+from nextcord import TextChannel
 keep_alive()
 
 bot = commands.Bot(command_prefix=".", intents=nextcord.Intents.all())
@@ -84,7 +85,42 @@ async def ticket(ctx: nextcord.Interaction):
         await ctx.send(embed=embed, ephemeral=True)
 
 
-        
+@bot.slash_command(name ="webhook", description="Create a webhook")
+async def webhook(ctx: nextcord.Interaction, channel: TextChannel, name=str):
+     if name is None:
+         webhook = await channel.create_webhook(name="Webhook")
+         embed = nextcord.Embed(title="Webhook created", description="A webhook has been created", color=nextcord.Colour.random())
+
+    # Send a message using the webhook with the embed
+         await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
+
+         await ctx.send(f"Webhook created in {channel.mention}.")
+
+    # Send a message using the webhook with the embed
+         await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
+
+         await ctx.send(f"Webhook created in {channel.mention}.")
+     elif channel is None:
+         webhook = await channel.create_webhook(name="Webhook")
+         embed = nextcord.Embed(title="Webhook created", description="A webhook has been created", color=nextcord.Colour.random())
+
+    # Send a message using the webhook with the embed
+         await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
+
+         await ctx.send(f"Webhook created in {channel.mention}.")
+
+    # Send a message using the webhook with the embed
+         await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
+
+         await ctx.send(f"Webhook created in {channel.mention}.")
+     else:
+         webhook = await channel.create_webhook(name=name)
+         embed = nextcord.Embed(title="Webhook created", description="A webhook has been created in"f"{channel.mention}", color=nextcord.Colour.random())
+
+    # Send a message using the webhook with the embed
+         await webhook.send(embed=embed, username=ctx.user.display_name, avatar_url=ctx.user.avatar.url)
+
+         await ctx.send(f"Webhook created in {channel.mention}.")
 
 
 
