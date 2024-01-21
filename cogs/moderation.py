@@ -206,5 +206,5 @@ class Moderation(commands.Cog, name="Moderation"):
             await self.send_error_embed(ctx, "The bot does not have permission to timeout the member.")
         except nextcord.HTTPException:
             await self.send_error_embed(ctx, "An error occurred while timing out the member.")
-setup(bot):
+def setup(bot):
     bot.add_cog(Moderation(bot))
