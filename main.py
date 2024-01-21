@@ -82,5 +82,11 @@ async def ticket(ctx: nextcord.Interaction):
     else:
         embed = nextcord.Embed(title=f"You don't have the permissions for this!")
         await ctx.send(embed=embed, ephemeral=True)
-      
+
+
+        
+
+
+
+
 bot.run(token)
