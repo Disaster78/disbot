@@ -1,6 +1,5 @@
 import nextcord
 from nextcord.ext import commands
-from typing import Optional
 # Custom check function
 def has_ban_permissions(ctx):
     return ctx.author.guild_permissions.ban_members
@@ -207,42 +206,5 @@ class Moderation(commands.Cog, name="Moderation"):
             await self.send_error_embed(ctx, "The bot does not have permission to timeout the member.")
         except nextcord.HTTPException:
             await self.send_error_embed(ctx, "An error occurred while timing out the member.")
-   @nextcord.slash_command(name="webhook", description="Create a webhook")
-   async def webhook(ctx, interaction: nextcord.Interaction, channel: Optional[nextcord.TextChannel]= SlashOption(required=False), name: Optional[str] = SlashOption(required=False)):
-       if name is None:
-           webhook = await channel.create_webhook(name="Webhook")
-           embed = nextcord.Embed(title="Webhook created", description="A webhook has been created", color=nextcord.Colour.random())
-
-    # Send a message using the webhook with the embed
-    await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
-
-    await ctx.send(f"Webhook created in {channel.mention}.")
-
-    # Send a message using the webhook with the embed
-    await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
-
-    await ctx.send(f"Webhook created in {channel.mention}.")
-       elif channel is None:
-           webhook = await channel.create_webhook(name="Webhook")
-           embed = nextcord.Embed(title="Webhook created", description="A webhook has been created", color=nextcord.Colour.random())
-
-    # Send a message using the webhook with the embed
-    await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
-
-    await ctx.send(f"Webhook created in {channel.mention}.")
-
-    # Send a message using the webhook with the embed
-    await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
-
-    await ctx.send(f"Webhook created in {channel.mention}.")
-       else:
-           webhook = await channel.create_webhook(name=name)
-           embed = nextcord.Embed(title="Webhook created", description="A webhook has been created in {channel.mention}", color=nextcord.Colour.random())
-
-    # Send a message using the webhook with the embed
-    await webhook.send(embed=embed, username=ctx.author.display_name, avatar_url=ctx.author.avatar.url)
-
-    await ctx.send(f"Webhook created in {channel.mention}.")
-
-def setup(bot):
+setup(bot):
     bot.add_cog(Moderation(bot))
