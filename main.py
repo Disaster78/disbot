@@ -135,7 +135,7 @@ async def embed(ctx: nextcord.Interaction,title:str=SlashOption(required=True), 
 @bot.slash_command(name="sendwebhook", description="Send an embed message using webhook")
 async def sendwebhook(
     ctx: nextcord.Interaction,
-    id: str = SlashOption(description="Note: If you want to specify a separate username and avatar for the webhook embed, you have to use the username and avatarurl option, other wise set the send_subsequent option to true.", required=True),
+    id: str = SlashOption(required=True),
     title: str = SlashOption(required=True),
     description: str = SlashOption(required=True),
     color: str = SlashOption(required=True),
