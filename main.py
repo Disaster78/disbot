@@ -164,7 +164,7 @@ async def sendwebhook(
             embed = nextcord.Embed(
                 title=title,
                 description=description,
-                color=nextcord.Colour(int(color, 16))  # Convert hex color to integer
+                color=color  # Convert hex color to integer
             )
             embed.set_thumbnail(url=thumbnail_icon)
             embed.set_image(url=image)
