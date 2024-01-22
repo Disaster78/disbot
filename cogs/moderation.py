@@ -206,5 +206,13 @@ class Moderation(commands.Cog, name="Moderation"):
             await self.send_error_embed(ctx, "The bot does not have permission to timeout the member.")
         except nextcord.HTTPException:
             await self.send_error_embed(ctx, "An error occurred while timing out the member.")
+    @commands.command(name ="avatarurl", description="Get the avatar url for a member", usage="avatar url <member>")
+    async def avatarurl(self, ctx, member: nextcord.Member = None):
+        member = member or ctx.author
+        embed = nextcord.Embed(
+            title=f"{member.name}'s AvatarUrl",description=f"[Click here to download]({member.avatar.url})", color=nextcord.Colour.random
+            
+        await ctx.send(embed=embed)
+
 def setup(bot):
     bot.add_cog(Moderation(bot))
