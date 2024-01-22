@@ -210,7 +210,7 @@ class Moderation(commands.Cog, name="Moderation"):
     async def avatarurl(self, ctx, member: nextcord.Member = None):
         member = member or ctx.author
         embed = nextcord.Embed(
-            title=f"{member.name}'s AvatarUrl",description=f"[Click here to download]({member.avatar.url})", color=nextcord.Colour.random
+            title=f"{member.name}'s AvatarUrl",description=f"[Click here to download]({member.avatar.url})", color=nextcord.Colour.random())
             
         await ctx.send(embed=embed)
 
