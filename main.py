@@ -139,8 +139,8 @@ async def sendwebhook(
     title: str = SlashOption(required=True),
     description: str = SlashOption(required=True),
     color: str = SlashOption(required=True),
-    username: str = SlashOption(required=True),
-    avatarurl: str = SlashOption(required=True),
+    username: str = SlashOption(required=False),
+    avatarurl: str = SlashOption(required=False),
     icon: str = SlashOption(required=False),
     thumbnail_icon: str = SlashOption(required=False),
     image: str = SlashOption(required=False),
@@ -158,21 +158,22 @@ async def sendwebhook(
             except ValueError:
                 color_value = 0x7289DA
 
-        # Create the initial embed with username, avatar_url, and specified color
-        embed = nextcord.Embed(
-            title=title,
-            description=description,
-            color=nextcord.Colour(color_value)
-        )
-        embed.set_thumbnail(url=thumbnail_icon)
-        embed.set_image(url=image)
-        embed.set_footer(text=footer_text, icon_url=icon)
+        if username and avatarurl:
+            # Create the initial embed with username, avatar_url, and specified color
+            embed = nextcord.Embed(
+                title=title,
+                description=description,
+                color=nextcord.Colour(color_value)
+            )
+            embed.set_thumbnail(url=thumbnail_icon)
+            embed.set_image(url=image)
+            embed.set_footer(text=footer_text, icon_url=icon)
 
-        # Send the initial embed with username and avatar_url
-        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
+            # Send the initial embed with username and avatar_url
+            await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
 
         # Optionally send subsequent embeds without specifying username and avatar_url
-        if send_subsequent:
+        elif send_subsequent:
             for _ in range(5):  # Adjust the range as needed
                 embed = nextcord.Embed(
                     title=title,
@@ -189,6 +190,7 @@ async def sendwebhook(
             await ctx.send("Initial embed created with webhook.")
     else:
         await ctx.send("You don't have the required permissions.")
+
 
 
 
