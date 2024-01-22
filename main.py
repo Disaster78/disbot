@@ -174,7 +174,7 @@ async def sendwebhook(
 
         # Optionally send subsequent embeds without specifying username and avatar_url
         elif send_subsequent:
-            for _ in range(5):  # Adjust the range as needed
+            for _ in range(1):  # Adjust the range as needed
                 embed = nextcord.Embed(
                     title=title,
                     description=description,
