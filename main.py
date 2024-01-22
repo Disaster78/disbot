@@ -4,6 +4,7 @@ import os
 from keep_alive import keep_alive
 from nextcord import SlashOption, TextChannel
 from typing import Optional
+import colour
 keep_alive()
 bot = commands.Bot(command_prefix=".", intents=nextcord.Intents.all())
 bot.remove_command("help")
@@ -138,8 +139,8 @@ async def sendwebhook(
     title: str = SlashOption(required=True),
     description: str = SlashOption(required=True),
     color: str = SlashOption(required=True),
-    username: str = SlashOption(required=False),
-    avatarurl: str = SlashOption(required=False),
+    username: str = SlashOption(required=True),
+    avatarurl: str = SlashOption(required=True),
     icon: str = SlashOption(required=False),
     thumbnail_icon: str = SlashOption(required=False),
     image: str = SlashOption(required=False),
@@ -147,12 +148,23 @@ async def sendwebhook(
 ):
     if ctx.user.guild_permissions.administrator and ctx.user != None:
         webhook = await bot.fetch_webhook(id)
-        
+
+        try:
+            # Try to parse the color as a hex value
+            color_value = int(color, 16)
+        except ValueError:
+            # If it's not a hex value, try to convert it using the colour library
+            try:
+                color_value = int(colour.Color(color).rgb[0] * 0xFFFFFF)
+            except ValueError:
+                # Default to Discord purple if parsing fails
+                color_value = 0x7289DA
+
         # Create the initial embed with username, avatar_url, and specified color
         embed = nextcord.Embed(
             title=title,
             description=description,
-            color=color # Convert hex color to integer
+            color=nextcord.Colour(color_value)
         )
         embed.set_thumbnail(url=thumbnail_icon)
         embed.set_image(url=image)
@@ -164,7 +176,7 @@ async def sendwebhook(
             embed = nextcord.Embed(
                 title=title,
                 description=description,
-                color=color  # Convert hex color to integer
+                color=nextcord.Colour(color_value)
             )
             embed.set_thumbnail(url=thumbnail_icon)
             embed.set_image(url=image)
@@ -174,7 +186,6 @@ async def sendwebhook(
         await ctx.send("Embeds created with webhook.")
     else:
         await ctx.send("You don't have the required permissions.")
-
 
 
 
