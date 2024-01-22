@@ -132,44 +132,49 @@ async def embed(ctx: nextcord.Interaction,title:str=SlashOption(required=True), 
         await ctx.send(embed=embed, ephemeral=True)
 
 @bot.slash_command(name="sendwebhook", description="Send an embed message using webhook")
-async def sendwebhook(ctx: nextcord.Interaction,id:str=SlashOption(required=True), title:str=SlashOption(required=True), description:str=SlashOption(required=True), color:str=SlashOption(required=True), username:str=SlashOption(required=True), avatarurl:str=SlashOption(required=True),
-icon:str=SlashOption(required=False),thumbnail_icon:str=SlashOption(required=False), image:str=SlashOption(required=False), footer_text:str=SlashOption(required=False)):
+async def sendwebhook(
+    ctx: nextcord.Interaction,
+    id: str = SlashOption(required=True),
+    title: str = SlashOption(required=True),
+    description: str = SlashOption(required=True),
+    color: str = SlashOption(required=True),
+    username: str = SlashOption(required=True),
+    avatarurl: str = SlashOption(required=True),
+    icon: str = SlashOption(required=False),
+    thumbnail_icon: str = SlashOption(required=False),
+    image: str = SlashOption(required=False),
+    footer_text: str = SlashOption(required=False)
+):
     if ctx.user.guild_permissions.administrator and ctx.user != None:
-        webhook=await bot.fetch_webhook(id)
-        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        webhook = await bot.fetch_webhook(id)
+        
+        # Create the initial embed with username, avatar_url, and specified color
+        embed = nextcord.Embed(
+            title=title,
+            description=description,
+            color=nextcord.Colour(int(color, 16))  # Convert hex color to integer
+        )
         embed.set_thumbnail(url=thumbnail_icon)
         embed.set_image(url=image)
         embed.set_footer(text=footer_text, icon_url=icon)
         await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
-        await ctx.send("Embed created with webhook.")
-    elif icon is None:
-        webhook=await bot.fetch_webhook(id)
-        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
-        embed.set_thumbnail(url=thumbnail_icon)
-        embed.set_image(url=image)
-        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
-        await ctx.send("Embed created with webhook.")
-    elif thumbnail_icon is None:
-        webhook=await bot.fetch_webhook(id)
-        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
-        embed.set_image(url=image)
-        embed.set_footer(text=text, icon_url=icon)
-        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
-        await ctx.send("Embed created with webhook.")
-    elif image is None:
-        webhook=await bot.fetch_webhook(id)
-        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
-        embed.set_thumbnail(url=thumbnail_icon)
-        embed.set_footer(text=text, icon_url=icon) 
-        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
-        await ctx.send("Embed created with webhook.")
+
+        # Create subsequent embeds without specifying username, avatar_url, and color
+        for _ in range(5):  # You can adjust the range as needed
+            embed = nextcord.Embed(
+                title=title,
+                description=description,
+                color=nextcord.Colour(int(color, 16))  # Convert hex color to integer
+            )
+            embed.set_thumbnail(url=thumbnail_icon)
+            embed.set_image(url=image)
+            embed.set_footer(text=footer_text, icon_url=icon)
+            await webhook.send(embed=embed)
+
+        await ctx.send("Embeds created with webhook.")
     else:
-        webhook=await bot.fetch_webhook(id)
-        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
-        embed.set_thumbnail(url=thumbnail_icon)
-        embed.set_image(url=image)
-        await webhook.send(embed=embed, username=username, avatar_url=avatarurl)
-        await ctx.send("Embed created with webhook")
+        await ctx.send("You don't have the required permissions.")
+
 
 
 
