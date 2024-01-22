@@ -151,12 +151,12 @@ async def sendwebhook(
         webhook = await bot.fetch_webhook(id)
 
         try:
-            color_value = int(color, 16)
+            # Try to convert color to RGB using the colour library
+            color_rgb = colour.Color(color).rgb
+            color_value = int(color_rgb[0] * 255) << 16 | int(color_rgb[1] * 255) << 8 | int(color_rgb[2] * 255)
         except ValueError:
-            try:
-                color_value = int(colour.Color(color).rgb[0] * 0xFFFFFF)
-            except ValueError:
-                color_value = 0x7289DA
+            # Handle invalid color input, set a default color, or raise an error
+            color_value = 0x7289DA  # Discord blue as a default color
 
         if username and avatarurl:
             # Create the initial embed with username, avatar_url, and specified color
