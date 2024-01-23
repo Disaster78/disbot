@@ -182,30 +182,7 @@ class Moderation(commands.Cog, name="Moderation"):
         except nextcord.Forbidden:
             await self.send_error_embed(ctx, "The bot does not have permission to purge messages.")
         except nextcord.HTTPException:
-            await self.send_error_embed(ctx, "An error occurred while purging messages.")
-
-    @commands.command(name='timeout' , description="Timeout a member.", usage="timeout [member] [duration] [reason]")
-    @commands.has_permissions(moderate_members=True)
-    async def timeout(self, ctx, member: MemberConverter = None, duration: str = None, *, reason: str = "No reason provided"):
-        if member is None:
-            return await self.send_error_embed(ctx, "Please specify a member to timeout.")
-        if duration is None:
-            return await self.send_error_embed(ctx, "Please specify a duration for the timeout.")
-        try:
-            duration_seconds = parse_duration(duration)
-            if duration_seconds is None:
-                return await self.send_error_embed(ctx, "Invalid duration format. Please use a valid format like '1d', '2h', '30m', etc.")
-            await member.timeout(nextcord.utils.utcnow() + datetime.timedelta(seconds=duration_seconds), reason=reason)
-            embed = nextcord.Embed(
-                title="Member Timed Out",
-                description=f"{member.mention} has been timed out for {duration}. Reason: {reason}",
-                color=nextcord.Colour.random()
-            )
-            await ctx.send(embed=embed)
-        except nextcord.Forbidden:
-            await self.send_error_embed(ctx, "The bot does not have permission to timeout the member.")
-        except nextcord.HTTPException:
-            await self.send_error_embed(ctx, "An error occurred while timing out the member.")
+            await self.send_error_embed(ctx, "An error occurred while purging the messages")
     @commands.command(name ="avatarurl", description="Get the avatar url for a member", usage="avatar url <member>")
     async def avatarurl(self, ctx, member: nextcord.Member = None):
         member = member or ctx.author
