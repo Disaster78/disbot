@@ -1,5 +1,6 @@
 import nextcord
 from nextcord.ext import commands
+from nextcord.ext import application_checks
 import os
 from keep_alive import keep_alive
 from nextcord import SlashOption, TextChannel
@@ -191,7 +192,13 @@ async def sendwebhook(
     else:
         await ctx.send("You don't have the required permissions.")
 
+@bot.slash_command(name='timeout', description='timeouts a user for a specific time')
+@applications_checks.has_permissions(moderate_members=True)
+async def timeout(self, interaction: Interaction, member: Member, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0, reason: str = None):
+    duration = datetime.timedelta(seconds=seconds, minutes=minutes, hours= hours, days=days)
+    await member.timeout(duration, reason=reason)
 
+    await interaction.response.send_message(f'{member.mention} was timeouted until for {duration}', ephemeral=True)
 
 
 bot.run(token)
