@@ -6,6 +6,7 @@ from keep_alive import keep_alive
 from nextcord import SlashOption, TextChannel
 from typing import Optional
 import colour
+import datetime
 keep_alive()
 bot = commands.Bot(command_prefix=".", intents=nextcord.Intents.all())
 bot.remove_command("help")
