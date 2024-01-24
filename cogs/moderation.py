@@ -190,6 +190,14 @@ class Moderation(commands.Cog, name="Moderation"):
             title=f"{member.name}'s AvatarUrl",description=f"[Click here to download]({member.avatar.url})", color=nextcord.Colour.random())
             
         await ctx.send(embed=embed)
-
+    @commands.command(name="vote",description="Vote for the server on top.gg", usage=".vote")
+    async def vote(self, ctx):
+        embed = nextcord.Embed(
+            title="Vote for the server",
+            description="Vote for the server on top.gg",
+            color=nextcord.Colour.random()
+        )
+        embed.add_field(name="Link", value="[Click here to vote](https://top.gg/servers/1196104116703866991)", inline=False)
+        await ctx.send(embed=embed)
 def setup(bot):
     bot.add_cog(Moderation(bot))
