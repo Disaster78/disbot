@@ -77,7 +77,6 @@ class butts(nextcord.ui.View):
 
 @bot.slash_command(name="ticket", description="Setup the ticket system!")
 async def ticket(ctx: nextcord.Interaction):
-    webhook_url=webhook.url
     if ctx.user.guild_permissions.administrator and ctx.user != None:
 
 
