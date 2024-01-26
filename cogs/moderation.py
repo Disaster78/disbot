@@ -201,18 +201,14 @@ class Moderation(commands.Cog, name="Moderation"):
         await ctx.send(embed=embed)
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.attachments and message.channel.id == 1200154683721928805:
-        # Assuming correct emoji IDs, replace them with the actual IDs
-            await message.add_reaction("<:emoji_47:1200357003567042590>")
-            await message.add_reaction("<:emoji_47:1200357030205067354>")
-        else:
-            pass
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
         if message.channel.id == 1200154683721928805:
             if not message.attachments:  # Check if the message has no attachments
                 await message.delete()
+            else:
+                # Assuming correct emoji IDs, replace them with the actual IDs
+                await message.add_reaction("<:emoji_47:1200357003567042590>")
+                await message.add_reaction("<:emoji_47:1200357030205067354>")
+
             
 def setup(bot):
     bot.add_cog(Moderation(bot))
