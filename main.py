@@ -84,6 +84,7 @@ async def ticket(ctx: nextcord.Interaction):
 
 
         embed=nextcord.Embed(description=f"Press the button below to create a Ticket!")
+        await ctx.response.send_message("Ticket System Created", ephemeral=True)
         await ctx.send(embed=embed, view=buttons())
     else:
         embed = nextcord.Embed(title=f"You don't have the permissions for this!")
@@ -131,6 +132,7 @@ async def webhook(ctx: nextcord.Interaction, channel: nextcord.TextChannel, name
 async def embed(ctx: nextcord.Interaction,title:str=SlashOption(required=True), description:str=SlashOption(required=True), color:str=SlashOption(required=True)):
     if ctx.user.guild_permissions.administrator and ctx.user != None:
         embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        await ctx.send("Embed Created", ephemeral=True)
         await ctx.send(embed=embed)
     else:
         embed = nextcord.Embed(title=f"You don't have the permissions for this!")
@@ -201,7 +203,7 @@ async def timeout(ctx: nextcord.Interaction, member: nextcord.Member, seconds: i
     duration = datetime.timedelta(seconds=seconds, minutes=minutes, hours= hours, days=days)
     await member.timeout(duration, reason=reason)
 
-    await ctx.response.send_message(f'{member.mention} was timeouted until for {duration}', ephemeral=True)
+    await ctx.response.send_message(f'{member.mention} was timeouted until for {duration}')
 @bot.slash_command(name='untimeout', description='Untimeouts a user')
 @application_checks.has_permissions(moderate_members=True)
 async def untimeout(ctx: nextcord.Interaction, member: nextcord.Member):
