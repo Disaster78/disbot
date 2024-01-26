@@ -208,6 +208,11 @@ class Moderation(commands.Cog, name="Moderation"):
         else:
             pass
 
-
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.channel.id == 1200154683721928805:
+            if not message.attachments:  # Check if the message has no attachments
+                await message.delete()
+            
 def setup(bot):
     bot.add_cog(Moderation(bot))
