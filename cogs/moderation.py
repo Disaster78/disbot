@@ -200,13 +200,13 @@ class Moderation(commands.Cog, name="Moderation"):
         embed.add_field(name="Link", value="[Click here to vote](https://top.gg/servers/1196104116703866991)", inline=False)
         await ctx.send(embed=embed)
     @commands.Cog.listener()
-async def on_message(self, message):
-    if message.attachments and message.channel.id == 1200154683721928805:
+    async def on_message(self, message):
+        if message.attachments and message.channel.id == 1200154683721928805:
         # Assuming correct emoji IDs, replace them with the actual IDs
-        await message.add_reaction("<:emoji_47:1200357003567042590>")
-        await message.add_reaction("<:emoji_47:1200357030205067354>")
-    else:
-        pass
+            await message.add_reaction("<:emoji_47:1200357003567042590>")
+            await message.add_reaction("<:emoji_47:1200357030205067354>")
+        else:
+            pass
 
 
 def setup(bot):
