@@ -23,7 +23,10 @@ async def on_ready():
             bot.load_extension(cog)
             print(cog + " was loaded.")
         except Exception as e:
-              print(e)
+            print(e)
+
+    bot.add_view(butts())
+    bot.add_view(buttons())
  
 @bot.event 
 async def on_message(message):
@@ -73,10 +76,6 @@ class butts(nextcord.ui.View):
         else:
             embed = nextcord.Embed(title=f"You don't have the permissions for this!")
             await interaction.send(embed=embed, ephemeral=True)
-@bot.event
-async def on_ready():
-    bot.add_view(butts())
-    bot.add_view(buttons())
 
 @bot.slash_command(name="ticket", description="Setup the ticket system!")
 async def ticket(ctx: nextcord.Interaction):
