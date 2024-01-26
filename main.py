@@ -34,7 +34,7 @@ async def on_message(message):
 class buttons(nextcord.ui.View):
 
     def __init__(self):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
 
     @nextcord.ui.button(label="Ticket Support", style=nextcord.ButtonStyle.green, emoji="📧")
@@ -53,7 +53,7 @@ class buttons(nextcord.ui.View):
 class butts(nextcord.ui.View):
 
     def __init__(self):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
 
     @nextcord.ui.button(label="Close Ticket", style=nextcord.ButtonStyle.red, emoji="📧")
@@ -73,7 +73,10 @@ class butts(nextcord.ui.View):
         else:
             embed = nextcord.Embed(title=f"You don't have the permissions for this!")
             await interaction.send(embed=embed, ephemeral=True)
-
+@bot.event
+async def on_ready():
+    bot.add_view(butts())
+    bot.add_view(buttons())
 
 @bot.slash_command(name="ticket", description="Setup the ticket system!")
 async def ticket(ctx: nextcord.Interaction):
