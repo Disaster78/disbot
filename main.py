@@ -7,6 +7,7 @@ from nextcord import SlashOption, TextChannel
 from typing import Optional
 import colour
 import datetime
+from nextcord.ui import button
 keep_alive()
 bot = commands.Bot(command_prefix=".", intents=nextcord.Intents.all())
 bot.remove_command("help")
@@ -208,5 +209,34 @@ async def timeout(ctx: nextcord.Interaction, member: nextcord.Member, seconds: i
 async def untimeout(ctx: nextcord.Interaction, member: nextcord.Member):
     await member.timeout(None)
     await ctx.send(f"{member.mention} was untimed out")
+@bot.command()
+async def verify(ctx):
+    # Create a view with the "Verify" button
+    view = VerifyButton()
+    
+    # Send a message with the button
+    await ctx.send("Click the button below to verify:", view=view)
+
+# Custom button to handle verification
+class VerifyButton(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @button(label="Verify", style=nextcord.ButtonStyle.green)
+    async def verify_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        member = interaction.user
+        guild = interaction.guild
+
+        # Get the "Member" and "Quarantine" roles
+        member_role = nextcord.utils.get(guild.roles, name="୧・M E M B E R S・୨")
+        quarantine_role = nextcord.utils.get(guild.roles, name="Quarantine")
+
+        if member_role and quarantine_role:
+            # Add the "Member" role and remove the "Quarantine" role
+            await member.add_roles(member_role)
+            await member.remove_roles(quarantine_role)
+            await interaction.response.send_message("You have been verified!", ephemeral=True)
+        else:
+            await interaction.response.send_message("Roles not found. Please contact an administrator.")
 
 bot.run(token)
