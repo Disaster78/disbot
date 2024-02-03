@@ -126,25 +126,15 @@ async def webhook(ctx: nextcord.Interaction, channel: nextcord.TextChannel, name
             await webhook.send(embed=embed, username=ctx.user.display_name, avatar_url=ctx.user.avatar.url)
 
             await ctx.send(f"Webhook created in {channel.mention}. id=```{webhook.id}```")
-@bot.slash_command(
-    name="embed",
-    description="Create an embed.",
-    options=[
-        SlashOption(str, "title", "Title of the embed.", True),
-        SlashOption(str, "description", "Description of the embed.", True),
-        SlashOption(str, "color", "Color of the embed.", True)
-    ]
-)
-async def embed(ctx: nextcord.Interaction, title: str, description: str, color: str):
-    # Convert the color to integer
-    try:
-        color_value = int(color, 16)
-    except ValueError:
-        await ctx.send("Invalid color format. Please use a hex color code.")
-        return
-
-    embed = nextcord.Embed(title=title, description=description, color=color_value)
-    await ctx.send(embed=embed)
+@bot.slash_command(name="embed", description="Create An embed")
+async def embed(ctx: nextcord.Interaction,title:str=SlashOption(required=True), description:str=SlashOption(required=True), color:str=SlashOption(required=True)):
+    if ctx.user.guild_permissions.administrator and ctx.user != None:
+        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour.random())
+        await ctx.send("Embed Created", ephemeral=True)
+        await ctx.channel.send(embed=embed)
+    else:
+        embed = nextcord.Embed(title=f"You don't have the permissions for this!")
+        await ctx.send(embed=embed, ephemeral=True)
 
 @bot.slash_command(name="sendwebhook", description="Send an embed message using webhook")
 async def sendwebhook(
