@@ -209,34 +209,32 @@ async def timeout(ctx: nextcord.Interaction, member: nextcord.Member, seconds: i
 async def untimeout(ctx: nextcord.Interaction, member: nextcord.Member):
     await member.timeout(None)
     await ctx.send(f"{member.mention} was untimed out")
-@bot.command()
+@bot.command(name="verify", description="Verify yourself to get access.")
 async def verify(ctx):
-    # Create a view with the "Verify" button
-    view = VerifyButton()
+    # Check if the command is used in the correct channel
+    if ctx.channel.id != 1197256695475343360:
+        return
     
-    # Send a message with the button
-    await ctx.send("Click the button below to verify:", view=view)
+    # Send the verification message with a button
+    verification_message = await ctx.send(
+        f"Welcome, {ctx.author.mention}! Click the button below to complete verification.",
+        components=[
+            nextcord.ui.Button(label="Verify", custom_id="verification_button", style=nextcord.ButtonStyle.green)
+        ]
+    )
 
-# Custom button to handle verification
-class VerifyButton(nextcord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
+    # Wait for the button click
+    interaction = await bot.wait_for("button_click", check=lambda i: i.custom_id == "verification_button" and i.user.id == ctx.author.id)
 
-    @button(label="Verify", style=nextcord.ButtonStyle.green)
-    async def verify_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        member = interaction.user
-        guild = interaction.guild
+    # Add member role and remove quarantine role
+    member_role = ctx.guild.get_role(1197243265532043304)
+    quarantine_role = ctx.guild.get_role(1203324355518402570)
+    await ctx.author.add_roles(member_role)
+    await ctx.author.remove_roles(quarantine_role)
 
-        # Get the "Member" and "Quarantine" roles
-        member_role = nextcord.utils.get(guild.roles, name="୧・M E M B E R S・୨")
-        quarantine_role = nextcord.utils.get(guild.roles, name="Quarantine")
+    # Send a confirmation message
+    await ctx.send(f"Verification complete, {ctx.author.mention}! You now have access.")
 
-        if member_role and quarantine_role:
-            # Add the "Member" role and remove the "Quarantine" role
-            await member.add_roles(member_role)
-            await member.remove_roles(quarantine_role)
-            await interaction.response.send_message("You have been verified!", ephemeral=True)
-        else:
-            await interaction.response.send_message("Roles not found. Please contact an administrator.")
-
+    # Delete the verification message after the verification is complete
+    await verification_message.delete()
 bot.run(token)
