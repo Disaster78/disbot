@@ -135,7 +135,7 @@ async def webhook(ctx: nextcord.Interaction, channel: nextcord.TextChannel, name
         SlashOption(str, "color", "Color of the embed.", True)
     ]
 )
-async def embed(ctx: SlashContext, title: str, description: str, color: str):
+async def embed(ctx: nextcord.Interaction, title: str, description: str, color: str):
     # Convert the color to integer
     try:
         color_value = int(color, 16)
