@@ -3,7 +3,7 @@ from nextcord.ext import commands
 from nextcord.ext import application_checks
 import os
 from keep_alive import keep_alive
-from nextcord import SlashOption, TextChannel, SlashContext
+from nextcord import SlashOption, TextChannel
 from typing import Optional
 import colour
 import datetime
