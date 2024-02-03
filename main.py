@@ -8,7 +8,6 @@ from typing import Optional
 import colour
 import datetime
 from nextcord.ui import button
-from nextcord import Option
 keep_alive()
 bot = commands.Bot(command_prefix=".", intents=nextcord.Intents.all())
 bot.remove_command("help")
