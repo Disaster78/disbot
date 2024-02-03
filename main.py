@@ -209,26 +209,49 @@ async def timeout(ctx: nextcord.Interaction, member: nextcord.Member, seconds: i
 async def untimeout(ctx: nextcord.Interaction, member: nextcord.Member):
     await member.timeout(None)
     await ctx.send(f"{member.mention} was untimed out")
+YOUR_SPECIFIC_CHANNEL_ID = 1197256695475343360  # Replace with your specific channel ID
+MEMBER_ROLE_ID = 1197243265532043304  # Replace with your member role ID
+QUARANTINE_ROLE_ID = 1203324355518402570  # Replace with your quarantine role ID
+
+class VerificationButton(nextcord.ui.Button):
+    def __init__(self, bot, custom_id):
+        super().__init__(style=nextcord.ButtonStyle.green, label="Verify", custom_id=custom_id)
+        self.bot = bot
+
+    async def callback(self, interaction: nextcord.Interaction):
+        # Triggered when the button is clicked
+        await interaction.response.defer()
+        await interaction.delete_original_message()
+
+        # Trigger your verification logic here, for example, add roles
+        member_role = interaction.guild.get_role(MEMBER_ROLE_ID)
+        quarantine_role = interaction.guild.get_role(QUARANTINE_ROLE_ID)
+        await interaction.user.add_roles(member_role)
+        await interaction.user.remove_roles(quarantine_role)
+
+        # Send a confirmation message via ephemeral response
+        await interaction.followup.send(content=f"Verification complete, {interaction.user.mention}! You now have access.", ephemeral=True)
+
 @bot.command(name="verify", description="Verify yourself to get access.")
 async def verify(ctx):
     # Check if the command is used in the correct channel
-    if ctx.channel.id != 1197256695475343360:
+    if ctx.channel.id != YOUR_SPECIFIC_CHANNEL_ID:
         return
-    
+
     # Send the verification message with a button
     verification_message = await ctx.send(
         f"Welcome, {ctx.author.mention}! Click the button below to complete verification.",
         components=[
-            nextcord.ui.Button(label="Verify", custom_id="verification_button", style=nextcord.ButtonStyle.green)
+            VerificationButton(ctx.bot, "verification_button")
         ]
     )
 
     # Wait for the button click
-    interaction = await bot.wait_for("button_click", check=lambda i: i.custom_id == "verification_button" and i.user.id == ctx.author.id)
+    interaction = await ctx.bot.wait_for("button_click", check=lambda i: i.custom_id == "verification_button" and i.user.id == ctx.author.id)
 
     # Add member role and remove quarantine role
-    member_role = ctx.guild.get_role(1197243265532043304)
-    quarantine_role = ctx.guild.get_role(1203324355518402570)
+    member_role = ctx.guild.get_role(MEMBER_ROLE_ID)
+    quarantine_role = ctx.guild.get_role(QUARANTINE_ROLE_ID)
     await ctx.author.add_roles(member_role)
     await ctx.author.remove_roles(quarantine_role)
 
