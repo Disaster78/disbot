@@ -130,7 +130,7 @@ async def webhook(ctx: nextcord.Interaction, channel: nextcord.TextChannel, name
     name="embed",
     description="Create an embed."
 )
-async def embed(ctx: SlashContext, 
+async def embed(ctx: nextcord.Interaction, 
                 title: SlashOption(str, "Title of the embed.", True),
                 description: SlashOption(str, "Description of the embed.", True),
                 color: SlashOption(str, "Color of the embed.", True)):
