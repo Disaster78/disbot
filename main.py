@@ -214,17 +214,17 @@ async def verify(ctx):
     if ctx.channel.id != 1197256695475343360:
         return
 
-    # Create a view with the "Verify" button and pass the verification_message
-    view = VerifyButton(verification_message=await ctx.send("Click the button below to verify:"))
+    # Create a view with the "Verify" button
+    view = VerifyButton()
 
-    # Send a message with the button
-    await ctx.send("Click the button below to verify:", view=view)
+    # Send the verification message with the button and store the message in the view
+    view.verification_message = await ctx.send("Click the button below to verify:", view=view)
 
 # Custom button to handle verification
 class VerifyButton(nextcord.ui.View):
-    def __init__(self, verification_message):
+    def __init__(self):
         super().__init__(timeout=None)
-        self.verification_message = verification_message
+        self.verification_message = None
 
     @button(label="Verify", style=nextcord.ButtonStyle.green)
     async def verify_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -240,9 +240,14 @@ class VerifyButton(nextcord.ui.View):
             await member.add_roles(member_role)
             await member.remove_roles(quarantine_role)
             await interaction.response.send_message("You have been verified!", ephemeral=True)
+
+            # Delete the user's message and the verification message
+            if self.verification_message:
+                await interaction.message.delete()
+                await self.verification_message.delete()
         else:
             await interaction.response.send_message("Roles not found. Please contact an administrator.")
-            await self.verification_message.delete()
+
 
 
 bot.run(token)
