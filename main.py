@@ -3,7 +3,7 @@ from nextcord.ext import commands
 from nextcord.ext import application_checks
 import os
 from keep_alive import keep_alive
-from nextcord import SlashOption, TextChannel
+from nextcord import SlashOption, TextChannel, SlashContext
 from typing import Optional
 import colour
 import datetime
@@ -128,22 +128,22 @@ async def webhook(ctx: nextcord.Interaction, channel: nextcord.TextChannel, name
             await ctx.send(f"Webhook created in {channel.mention}. id=```{webhook.id}```")
 @bot.slash_command(
     name="embed",
-    description="Create an embed."
+    description="Create an embed.",
+    options=[
+        SlashOption(str, "title", "Title of the embed.", True),
+        SlashOption(str, "description", "Description of the embed.", True),
+        SlashOption(str, "color", "Color of the embed.", True)
+    ]
 )
-async def embed(ctx: nextcord.Interaction, 
-                title: SlashOption(str, "Title of the embed.", True),
-                description: SlashOption(str, "Description of the embed.", True),
-                color: SlashOption(str, "Color of the embed.", True)):
+async def embed(ctx: SlashContext, title: str, description: str, color: str):
     # Convert the color to integer
     try:
-        color_rgb = colour.Color(color).rgb
-        color_value = int(color_rgb[0] * 255) << 16 | int(color_rgb[1] * 255) << 8 | int(color_rgb[2] * 255)
-
+        color_value = int(color, 16)
     except ValueError:
         await ctx.send("Invalid color format. Please use a hex color code.")
         return
 
-    embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour(color_value))
+    embed = nextcord.Embed(title=title, description=description, color=color_value)
     await ctx.send(embed=embed)
 
 @bot.slash_command(name="sendwebhook", description="Send an embed message using webhook")
@@ -224,20 +224,17 @@ async def verify(ctx):
     if ctx.channel.id != 1197256695475343360:
         return
 
-    # Send the verification message with a button
-    verification_message = await ctx.send(
-        "Click the button below to verify:",
-        view=VerifyButton()
-    )
+    # Create a view with the "Verify" button and pass the verification_message
+    view = VerifyButton(verification_message=await ctx.send("Click the button below to verify:"))
 
-    # Set the verification_message attribute in the view
-    verification_message.view.verification_message = verification_message
+    # Send a message with the button
+    await ctx.send("Click the button below to verify:", view=view)
 
 # Custom button to handle verification
 class VerifyButton(nextcord.ui.View):
-    def __init__(self):
+    def __init__(self, verification_message):
         super().__init__(timeout=None)
-        self.verification_message = None
+        self.verification_message = verification_message
 
     @button(label="Verify", style=nextcord.ButtonStyle.green)
     async def verify_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -253,11 +250,9 @@ class VerifyButton(nextcord.ui.View):
             await member.add_roles(member_role)
             await member.remove_roles(quarantine_role)
             await interaction.response.send_message("You have been verified!", ephemeral=True)
-
-            # Delete the verification message after the verification is complete
-            await self.verification_message.delete()
         else:
             await interaction.response.send_message("Roles not found. Please contact an administrator.")
+            await self.verification_message.delete()
 
 
 bot.run(token)
