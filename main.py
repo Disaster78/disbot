@@ -126,15 +126,14 @@ async def webhook(ctx: nextcord.Interaction, channel: nextcord.TextChannel, name
             await webhook.send(embed=embed, username=ctx.user.display_name, avatar_url=ctx.user.avatar.url)
 
             await ctx.send(f"Webhook created in {channel.mention}. id=```{webhook.id}```")
-
 @bot.slash_command(
     name="embed",
     description="Create an embed.",
     options=[
-        SlashOption("title", "Title of the embed.", SlashOptionType.STRING, True),
-        SlashOption("description", "Description of the embed.", SlashOptionType.STRING, True),
-        SlashOption("color", "Color of the embed.", SlashOptionType.STRING, True),
-        SlashOption("fields", "Fields to add to the embed.", SlashOptionType.STRING, False)
+        Option("title", "Title of the embed.", OptionType.STRING, True),
+        Option("description", "Description of the embed.", OptionType.STRING, True),
+        Option("color", "Color of the embed.", OptionType.STRING, True),
+        Option("fields", "Fields to add to the embed.", OptionType.STRING, False)
     ]
 )
 async def embed(ctx: commands.Context, title: str, description: str, color: str, fields: str = None):
