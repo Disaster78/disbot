@@ -8,17 +8,17 @@ class WelcomeCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         # Give the user the "Quarantine" role when they join
-        quarantine_role = nextcord.utils.get(member.guild.roles, name="Quarantine")
-        await member.add_roles(quarantine_role)
+        unverified_role = nextcord.utils.get(member.guild.roles, name="unverified")
+        await member.add_roles(unverified_role)
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         # Check if the "Quarantine" role is in before.roles and not in after.roles,
         # and if the "Member" role is in after.roles
-        quarantine_role = nextcord.utils.get(after.guild.roles, name="Quarantine")
+        unverified_role = nextcord.utils.get(after.guild.roles, name="unverified")
         member_role = nextcord.utils.get(after.roles, id=1197243265532043304)
 
-        if quarantine_role in before.roles and quarantine_role not in after.roles and member_role in after.roles:
+        if unverified_role in before.roles and unverified_role not in after.roles and member_role in after.roles:
             # The user has been verified and received the "Member" role
             channel = after.guild.get_channel(1197217821533413447)  # Replace with your channel ID
             embed = nextcord.Embed(
