@@ -136,7 +136,9 @@ async def embed(ctx: nextcord.Interaction,
                 color: SlashOption(str, "Color of the embed.", True)):
     # Convert the color to integer
     try:
-        color_value = int(color, 16)
+        color_rgb = colour.Color(color).rgb
+        color_value = int(color_rgb[0] * 255) << 16 | int(color_rgb[1] * 255) << 8 | int(color_rgb[2] * 255)
+
     except ValueError:
         await ctx.send("Invalid color format. Please use a hex color code.")
         return
