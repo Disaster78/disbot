@@ -129,15 +129,15 @@ async def webhook(ctx: nextcord.Interaction, channel: nextcord.TextChannel, name
 
 @bot.slash_command(
     name="embed",
-    description="Create an embed."
+    description="Create an embed.",
+    options=[
+        SlashOption("title", "Title of the embed.", SlashOptionType.STRING, True),
+        SlashOption("description", "Description of the embed.", SlashOptionType.STRING, True),
+        SlashOption("color", "Color of the embed.", SlashOptionType.STRING, True),
+        SlashOption("fields", "Fields to add to the embed.", SlashOptionType.STRING, False)
+    ]
 )
-async def embed(
-    ctx: commands.Context,
-    title: str = SlashOption("title", "Title of the embed.", True),
-    description: str = SlashOption("description", "Description of the embed.", True),
-    color: str = SlashOption("color", "Color of the embed.", True),
-    fields: list[dict] = SlashOption("fields", "Fields to add to the embed.", False)
-):
+async def embed(ctx: commands.Context, title: str, description: str, color: str, fields: str = None):
     if ctx.author.guild_permissions.administrator and ctx.author:
         try:
             color_value = int(Colour(color).hex_l[1:], 16)
@@ -242,14 +242,17 @@ async def verify(ctx):
     # Send the verification message with a button
     verification_message = await ctx.send(
         "Click the button below to verify:",
-        view=VerifyButton(verification_message)
+        view=VerifyButton()
     )
+
+    # Set the verification_message attribute in the view
+    verification_message.view.verification_message = verification_message
 
 # Custom button to handle verification
 class VerifyButton(nextcord.ui.View):
-    def __init__(self, verification_message):
+    def __init__(self):
         super().__init__(timeout=None)
-        self.verification_message = verification_message
+        self.verification_message = None
 
     @button(label="Verify", style=nextcord.ButtonStyle.green)
     async def verify_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -270,5 +273,6 @@ class VerifyButton(nextcord.ui.View):
             await self.verification_message.delete()
         else:
             await interaction.response.send_message("Roles not found. Please contact an administrator.")
+
 
 bot.run(token)
