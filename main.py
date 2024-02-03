@@ -128,27 +128,26 @@ async def webhook(ctx: nextcord.Interaction, channel: nextcord.TextChannel, name
 
             await ctx.send(f"Webhook created in {channel.mention}. id=```{webhook.id}```")
 
-
 @bot.slash_command(
     name="embed",
-    description="Create an embed.",
-    options=[
-        Option("title", "Title of the embed.", type=3, required=True),
-        Option("description", "Description of the embed.", type=3, required=True),
-        Option("color", "Color of the embed.", type=3, required=True),
-        Option("fields", "Fields to add to the embed.", type=6, required=False),
-    ]
+    description="Create an embed."
 )
-async def embed(ctx: commands.Context, title: str, description: str, color: str, fields: list[dict] = None):
+async def embed(
+    ctx: commands.Context,
+    title: str = SlashOption("title", "Title of the embed.", True),
+    description: str = SlashOption("description", "Description of the embed.", True),
+    color: str = SlashOption("color", "Color of the embed.", True),
+    fields: list[dict] = SlashOption("fields", "Fields to add to the embed.", False)
+):
     if ctx.author.guild_permissions.administrator and ctx.author:
         try:
-            color_value = int(colour.Color(color).hex_l[1:], 16)
+            color_value = int(Colour(color).hex_l[1:], 16)
         except ValueError:
-            embed = nextcord.Embed(title="Invalid color name!", color=0xFF0000)
+            embed = Embed(title="Invalid color name!", color=0xFF0000)
             await ctx.send(embed=embed, ephemeral=True)
             return
 
-        embed = nextcord.Embed(title=title, description=description, color=nextcord.Colour(color_value))
+        embed = Embed(title=title, description=description, color=Colour(color_value))
 
         if fields:
             for field in fields:
@@ -160,7 +159,7 @@ async def embed(ctx: commands.Context, title: str, description: str, color: str,
         await ctx.send("Embed Created", ephemeral=True)
         await ctx.send(embed=embed)
     else:
-        embed = nextcord.Embed(title="You don't have the permissions for this!")
+        embed = Embed(title="You don't have the permissions for this!")
         await ctx.send(embed=embed, ephemeral=True)
 
 @bot.slash_command(name="sendwebhook", description="Send an embed message using webhook")
@@ -234,54 +233,41 @@ async def timeout(ctx: nextcord.Interaction, member: nextcord.Member, seconds: i
 async def untimeout(ctx: nextcord.Interaction, member: nextcord.Member):
     await member.timeout(None)
     await ctx.send(f"{member.mention} was untimed out")
-YOUR_SPECIFIC_CHANNEL_ID = 1197256695475343360  # Replace with your specific channel ID
-MEMBER_ROLE_ID = 1197243265532043304  # Replace with your member role ID
-QUARANTINE_ROLE_ID = 1203324355518402570  # Replace with your quarantine role ID
 
-class VerificationButton(nextcord.ui.Button):
-    def __init__(self, bot, custom_id):
-        super().__init__(style=nextcord.ButtonStyle.green, label="Verify", custom_id=custom_id)
-        self.bot = bot
-
-    async def callback(self, interaction: nextcord.Interaction):
-        # Triggered when the button is clicked
-        await interaction.response.defer()
-        await interaction.delete_original_message()
-
-        # Trigger your verification logic here, for example, add roles
-        member_role = interaction.guild.get_role(MEMBER_ROLE_ID)
-        quarantine_role = interaction.guild.get_role(QUARANTINE_ROLE_ID)
-        await interaction.user.add_roles(member_role)
-        await interaction.user.remove_roles(quarantine_role)
-
-        # Send a confirmation message via ephemeral response
-        await interaction.followup.send(content=f"Verification complete, {interaction.user.mention}! You now have access.", ephemeral=True)
-
-@bot.command(name="verify", description="Verify yourself to get access.")
+@bot.command()
 async def verify(ctx):
     # Check if the command is used in the correct channel
-    if ctx.channel.id != YOUR_SPECIFIC_CHANNEL_ID:
+    if ctx.channel.id != 1197256695475343360:
         return
 
-    # Send the verification message with a button
-    verification_message = await ctx.send(
-        f"Welcome, {ctx.author.mention}! Click the button below to complete verification.",
-        components=[
-            VerificationButton(ctx.bot, "verification_button")
-        ]
-    )
+    # Create a view with the "Verify" button
+    view = VerifyButton()
+    
+    # Send a message with the button
+    await ctx.send("Click the button below to verify:", view=view)
 
-    # Wait for the button click
-    interaction = await ctx.bot.wait_for("button_click", check=lambda i: i.custom_id == "verification_button" and i.user.id == ctx.author.id)
+# Custom button to handle verification
+class VerifyButton(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
 
-    # Add member role and remove quarantine role
-    member_role = ctx.guild.get_role(MEMBER_ROLE_ID)
-    quarantine_role = ctx.guild.get_role(QUARANTINE_ROLE_ID)
-    await ctx.author.add_roles(member_role)
-    await ctx.author.remove_roles(quarantine_role)
+    @button(label="Verify", style=nextcord.ButtonStyle.green)
+    async def verify_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        member = interaction.user
+        guild = interaction.guild
 
-    # Send a confirmation message
-    await ctx.send(f"Verification complete, {ctx.author.mention}! You now have access.")
+        # Get the "Member" and "Quarantine" roles
+        member_role = nextcord.utils.get(guild.roles, name="୧・M E M B E R S・୨")
+        quarantine_role = nextcord.utils.get(guild.roles, name="unverified")
+
+        if member_role and quarantine_role:
+            # Add the "Member" role and remove the "Quarantine" role
+            await member.add_roles(member_role)
+            await member.remove_roles(quarantine_role)
+            await interaction.response.send_message("You have been verified!", ephemeral=True)
+        else:
+            await interaction.response.send_message("Roles not found. Please contact an administrator.")
+
 
     # Delete the verification message after the verification is complete
     await verification_message.delete()
